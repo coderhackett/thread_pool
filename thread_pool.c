@@ -1,19 +1,3 @@
-//////////////////////////////////////////////////////////////////
-//
-//  Copyright(C), 2013-2016, GEC Tech. Co., Ltd.
-//
-//  File name: GPLE/ch05/5.6/thread_pool.c
-//
-//  Author: Vincent Lin (林世霖)  微信公众号：秘籍酷
-//
-//  Date: 2016-3
-//  
-//  Description: 本文件包含了线程池操作函数的定义
-//
-//  GitHub: github.com/vincent040   Bug Report: 2437231462@qq.com
-//
-//////////////////////////////////////////////////////////////////
-
 #include "thread_pool.h"
 
 void handler(void *arg)
@@ -139,12 +123,12 @@ bool add_task(thread_pool *pool,
 	return true;
 }
 
-int add_thread(thread_pool *pool, unsigned additional_threads)
+int add_thread(thread_pool *pool, unsigned int additional_threads)
 {
 	if(additional_threads == 0)
 		return 0;
 
-	unsigned total_threads =
+	unsigned int total_threads =
 		     pool->active_threads + additional_threads;
 
 	int i, actual_increment = 0;

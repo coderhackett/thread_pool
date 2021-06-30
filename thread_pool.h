@@ -1,20 +1,3 @@
-//////////////////////////////////////////////////////////////////
-//
-//  Copyright(C), 2013-2016, GEC Tech. Co., Ltd.
-//
-//  File name: GPLE/ch05/5.6/thread_pool.h
-//
-//  Author: Vincent Lin (林世霖)  微信公众号：秘籍酷
-//
-//  Date: 2016-3
-//  
-//  Description: 本文件包含了线程池基本结构体定义，以及各个操作函
-//               数的声明
-//
-//  GitHub: github.com/vincent040   Bug Report: 2437231462@qq.com
-//
-//////////////////////////////////////////////////////////////////
-
 #ifndef _THREAD_POOL_H_
 #define _THREAD_POOL_H_
 
@@ -33,45 +16,63 @@
 
 struct task
 {
-	void *(*task)(void *arg);
-	void *arg;
-
-	struct task *next;
+	void *(*task)(void *arg);	/* 任务需要执行的函数 */
+	void *arg;					/* 执行函数的参数 */
+	struct task *next;			/* 下一个任务的地址 */
 };
 
 typedef struct thread_pool
 {
 	pthread_mutex_t lock;
 	pthread_cond_t  cond;
-	struct task *task_list;
-
-	pthread_t *tids;
-
-	unsigned waiting_tasks;
-	unsigned active_threads;
-
-	bool shutdown;
+	struct task *task_list;	/*链表结构，线程池中所有等待任务*/
+	pthread_t *tids;		/*存放线程id的指针*/
+	unsigned waiting_tasks; /*当前等待的任务数*/
+	unsigned active_threads;/*线程池中线程数目*/
+	bool shutdown;			/*是否销毁线程池*/
 }thread_pool;
 
-
-bool
-init_pool(thread_pool *pool,
+/*
+ * @description: 初始化线程池
+ * @param {thread_pool*} pool:线程池结构体指针 {unsigned int} max_thread_num: 创建几个线程
+ * @return: false 失败 true 成功
+ */
+bool init_pool(thread_pool *pool,
           unsigned int threads_number);
-
-bool
-add_task(thread_pool *pool,
+/*
+ * @description: 向线程池添加任务
+ * @param {thread_pool*} pool:线程池结构体指针 {void *(void *arg)} (*task): 线程的回调函数 {void *} arg: 传入的参数
+ * @return: false 失败 true 成功
+ */
+bool add_task(thread_pool *pool,
          void *(*task)(void *arg),
          void *arg);
-
-int 
-add_thread(thread_pool *pool,
+/*
+ * @description: 向线程池添加线程
+ * @param {thread_pool*} pool:线程池结构体指针 {unsigned int} additional_threads: 添加的线程数
+ * @return: 返回成功的线程数
+ */
+int add_thread(thread_pool *pool,
            unsigned int additional_threads_number);
-
-int 
-remove_thread(thread_pool *pool,
+/*
+ * @description: 线程池里取消线程
+ * @param {thread_pool*} pool:线程池结构体指针 {nsigned int} removing_threads: 取消的线程数
+ * @return: 失败返回-1
+ */
+int remove_thread(thread_pool *pool,
               unsigned int removing_threads_number);
 
+/*
+ * @description: 销毁线程池
+ * @param {thread_pool*} pool:线程池结构体指针
+ * @return: 成功返回true
+ */
 bool destroy_pool(thread_pool *pool);
+/*
+ * @description: 线程的回调处理函数
+ * @param  {void *} arg: 传入的参数
+ * @return: 无
+ */
 void *routine(void *arg);
 
 #endif
